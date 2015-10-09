@@ -5,23 +5,33 @@ public class Flight
 {
     public static ReBotAPI API;
     public static Fiber<int> Fib;
-
-    // Empty Constructor
-    public Flight() { }
+    private static string destinationName;
+    
+    // With a destination
+    public Flight(string destination)
+     {
+        destinationName = destination;
+    }
+    
+    // Empty Constructor sets destination to null
+    public Flight() 
+    {
+        destinationName = "";
+    }
 
 
     public static void FlyTo(String destinationName)
     {
-        getClosestFlight(destinationName);
+
     }
 
     // Method:      "GetClosestFlight(string)"
     // Purpose:     Take an Object with all FPs of a given zone, then determine
     //               which one is the closest to the player to take.
-    public static List<Object> getClosestFlight(String destinationName)
+    public static List<object> getClosestFlight()
     {
-        List<Object> result = new List<Object>();
-        List<Object> FPs = new List<Object>();
+        List<object> result = new List<object>();
+        List<object> FPs = new List<object>();
 
         int continentID = API.Me.ContinentID;
         int zoneID = API.Me.ZoneId;
@@ -56,9 +66,16 @@ public class Flight
         return result;
     }
     // Method:      "ToFlightMaster(String)"
-    public static IEnumerable<int> ToFlightMaster(String destinationName)
+    public static IEnumerable<int> ToFlightMaster()
     {
-        yield return 100;
+        List<object> result = getClosestFlight();
+        API.Print("The Flightpath Located at \"" + result[0] + "\" is the Closest Known FP!");
+        API.Print("Heading There...");
+        Vector3 destination = (Vector3) result[1];
+        while (!API.MoveTo(destination))
+        {
+            yield return 100;
+        }
     }
 
     // Method:      "IsKnown(String)"
@@ -82,9 +99,9 @@ public class Flight
     }
 
     // Filters out returns by continent
-    private static List<Object> getFlightMasterInfo(int continentID, int zoneID)
+    private static List<object> getFlightMasterInfo(int continentID, int zoneID)
     {
-        List<Object> result = new List<Object>();
+        List<object> result = new List<object>();
 
         // Draenor Continent
         if (continentID == 1116)

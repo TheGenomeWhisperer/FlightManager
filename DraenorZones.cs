@@ -1,6 +1,7 @@
+
 class DraenorZones
     {
-        public List<Object> AllFPs;
+        public List<object> AllFPs;
 
         public DraenorZones(int zoneID)
         {
@@ -8,9 +9,9 @@ class DraenorZones
         }
 
         // Filters out returns by zone on the continent
-        private static List<Object> getDraenorInfo(int zoneID)
+        private static List<object> getDraenorInfo(int zoneID)
         {
-            List<Object> result = new List<Object>();
+            List<object> result = new List<object>();
 
             // Frostfire Ridge (and caves and phases)
             if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209)
@@ -87,58 +88,64 @@ class DraenorZones
             return result;
         }
 
-        // Return for all of these will be in the following format (XYZ = V3 coordinates):  List<Object> zoneFlightInfo = {FPName,X,Y,Z,FPName,X,Y,Z,...)
-        private static List<Object> getStormshield()
+        // Return for all of these will be in the following format (XYZ = V3 coordinates):  List<object> zoneFlightInfo = {FPName,X,Y,Z,FPName,X,Y,Z,...)
+        private static List<object> getStormshield()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getWarspear()
+        private static List<object> getWarspear()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getHordeGarrison()
+        private static List<object> getHordeGarrison()
+        {
+            List<object> test = new List<object>();
+            test.Add("Frostwall Garrison");
+            test.Add(5579.5f);
+            test.Add(4565.3f);
+            test.Add(136.2f);
+            return test;
+              
+        }
+
+        private static List<object> getAshran()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getAshran()
+        private static List<object> getTanaan()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getTanaan()
+        private static List<object> getSMV()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getSMV()
+        private static List<object> getNagrand()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getNagrand()
+        private static List<object> getSpires()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getSpires()
+        private static List<object> getTalador()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getTalador()
+        private static List<object> getGorgrond()
         {
             throw new NotImplementedException();
         }
 
-        private static List<Object> getGorgrond()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<Object> getFFR()
+        private static List<object> getFFR()
         {
             throw new NotImplementedException();
         }
