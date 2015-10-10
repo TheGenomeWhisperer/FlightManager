@@ -1,152 +1,190 @@
 
-class DraenorZones
+public class DraenorZones
+{
+    public List<object> AllFPs;
+
+    public DraenorZones(int zoneID, bool factionIsHorde)
     {
-        public List<object> AllFPs;
+        AllFPs = getDraenorInfo(zoneID, factionIsHorde);
+    }
 
-        public DraenorZones(int zoneID)
+    // Filters out returns by zone on the continent
+    private static List<object> getDraenorInfo(int zoneID, bool factionIsHorde)
+    {
+        if (factionIsHorde)
         {
-            AllFPs = getDraenorInfo(zoneID);
-        }
-
-        // Filters out returns by zone on the continent
-        private static List<object> getDraenorInfo(int zoneID)
-        {
-            List<object> result = new List<object>();
-
-            // Frostfire Ridge (and caves and phases)
-            if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209)
+            // Frostfire Ridge (and caves and phases and Garrison)
+            if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209 || zoneID == 7004 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329)
             {
-                return getFFR();
+                return getHordeFFR();
             }
 
             // Gorgrond (and caves and phases)
             if (zoneID == 6721 || zoneID == 6885 || zoneID == 7160 || zoneID == 7185)
             {
-                return getGorgrond();
+                return getHordeGorgrond();
             }
 
             // Talador (and caves and phases)
             if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
             {
-                return getTalador();
+                return getHordeTalador();
             }
 
             // Spires of Arak
             if (zoneID == 6722)
             {
-                return getSpires();
+                return getHordeSpires();
             }
 
             // Nagrand (and phased caves)
             if (zoneID == 6755 || zoneID == 7124 || zoneID == 7203 || zoneID == 7204 || zoneID == 7267)
             {
-                return getNagrand();
+                return getHordeNagrand();
             }
 
             // Shadowmoon Valley (and caves and phases)
-            if (zoneID == 6719 || zoneID == 6976 || zoneID == 7460 || zoneID == 7083)
+            if (zoneID == 6719 || zoneID == 6976 || zoneID == 7460 || zoneID == 7083 || zoneID == 7078 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329)
             {
-                return getSMV();
+                return getHordeSMV();
             }
 
             // Tanaan Jungle
             if (zoneID == 6723)
             {
-                return getTanaan();
+                return getHordeTanaan();
             }
 
             // Ashran (and mine)
             if (zoneID == 6941 || zoneID == 7548)
             {
-                return getAshran();
+                return getHordeAshran();
             }
 
             // Warspear
             if (zoneID == 7333)
             {
-                return getWarspear();
+                return getHordeWarspear();
             }
 
             // Stormshield
             if (zoneID == 7332)
             {
-                return getStormshield();
+                return getHordeStormshield();
             }
-
-            // Frostwall Garrison (and 3 mine phases)
-            if (zoneID == 7004 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329)
-            {
-                return getHordeGarrison();
-            }
-
-            // Lunarfall Garrison (and 3 mine phases)
-            if (zoneID == 7078 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329)
-            {
-                return getHordeGarrison();
-            }
-
-            return result;
         }
-
-        // Return for all of these will be in the following format (XYZ = V3 coordinates):  List<object> zoneFlightInfo = {FPName,X,Y,Z,FPName,X,Y,Z,...)
-        private static List<object> getStormshield()
+        else
         {
-            throw new NotImplementedException();
+            // to be filled with Alliance destinations
         }
-
-        private static List<object> getWarspear()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getHordeGarrison()
-        {
-            List<object> test = new List<object>();
-            test.Add("Frostwall Garrison");
-            test.Add(5579.5f);
-            test.Add(4565.3f);
-            test.Add(136.2f);
-            return test;
-              
-        }
-
-        private static List<object> getAshran()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getTanaan()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getSMV()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getNagrand()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getSpires()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getTalador()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getGorgrond()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static List<object> getFFR()
-        {
-            throw new NotImplementedException();
-        }
+        
+        // No matches
+        List<object> result = new List<object>();
+        return result;
     }
+
+    // Return for all of these will be in the following format (XYZ = V3 coordinates):  List<object> zoneFlightInfo = {FPName,X,Y,Z,npcID, FPName,X,Y,Z,npcID, ...)
+    private static List<object> getHordeStormshield()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeWarspear()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeAshran()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeTanaan()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeSMV()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeNagrand()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeSpires()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeTalador()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeGorgrond()
+    {
+        throw new NotImplementedException();
+    }
+
+    private static List<object> getHordeFFR()
+    {
+        List<object> locations = new List<object>(){"Frostwall Garrison, Frostfire Ridge",5579.5f,4565.3f,136.2f,79407};
+        
+        locations.Add("Stonefang Outpost, Frostfire Ridge");
+        locations.Add(6157.6f);
+        locations.Add(5052.4f);
+        locations.Add(134.3f);
+        locations.Add(76879);
+        
+        locations.Add("Wor'gol, Frostfire Ridge");
+        locations.Add(5988.7f);
+        locations.Add(6180.9f);
+        locations.Add(70.1f);
+        locations.Add(76782);
+        
+        locations.Add("Throm'Var, Frostfire Ridge");
+        locations.Add(7879.6f);
+        locations.Add(5560.2f);
+        locations.Add(111.1f);
+        locations.Add(76783);
+        
+        locations.Add("Bloodmaul Slag Mines, Frostfire Ridge");
+        locations.Add(7403.6f);
+        locations.Add(4356.3f);
+        locations.Add(126.4f);
+        locations.Add(76787);
+        
+        locations.Add("Darkspear's Edge, Frostfire Ridge");
+        locations.Add(6600.0f);
+        locations.Add(4342.5f);
+        locations.Add(91.1f);
+        locations.Add(78699);
+        
+        locations.Add("Wolf's Stand, Frostfire Ridge");
+        locations.Add(5830.9f);
+        locations.Add(3004.1f);
+        locations.Add(183.2f);
+        locations.Add(87707);
+        
+        locations.Add("Thunder Pass, Frostfire Ridge");
+        locations.Add(5788.9f);
+        locations.Add(2397.1f);
+        locations.Add(201.4f);
+        locations.Add(76784);
+        
+        Flight temp = new Flight();
+        if (Flight.API.IsQuestCompleted(33657))
+        {
+            locations.Add("Bladespire Citadel, Frostfire Ridge");
+            locations.Add(6754.6f);
+            locations.Add(6012.5f);
+            locations.Add(250.0f);
+            locations.Add(76781);
+        }
+        
+        return locations;
+    }
+}
