@@ -126,7 +126,57 @@ public class DraenorZones
 
     private static List<object> getHordeGorgrond()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Iron Docks, Gorgrond",8486.2f,1544.2f,78.9f,84700};
+                        
+        locations.Add("Breaker's Crown, Gorgrond");
+        locations.Add(6591.3f);  
+        locations.Add(1313.9f);  
+        locations.Add(64.6f);
+        locations.Add(86492);
+        
+        locations.Add("Evermorn Springs, Gorgrond");
+        locations.Add(4822.8f);  
+        locations.Add(1670.8f);  
+        locations.Add(149.0f);    
+        locations.Add(84495);
+        
+        locations.Add("Bastion Rise, Gorgrond");
+        locations.Add(4649.9f);  
+        locations.Add(1187.5f);    
+        locations.Add(136.9f);
+        locations.Add(84508);
+        
+        if (Flight.API.Me.Level > 99)
+        {
+            locations.Add("Skysea Ridge, Gorgrond");
+            locations.Add(7597.1f);
+            locations.Add(1828.0f);
+            locations.Add(79.1f);
+            locations.Add(85829);
+            
+            locations.Add("Everbloom Wilds, Gorgrond");
+            locations.Add(7091.7f);
+            locations.Add(406.8f);
+            locations.Add(112.0f);
+            locations.Add(84714);
+            
+            locations.Add("Everbloom Overlook, Gorgrond");
+            locations.Add(8019.4f);
+            locations.Add(-554.9f);
+            locations.Add(154.8f);  
+            locations.Add(88757);
+        }
+        
+        if (Flight.API.IsQuestCompleted(35151))
+        {
+            locations.Add("Beastwatch, Gorgrond");
+            locations.Add(5782.3f);
+            locations.Add(1292.7f);      
+            locations.Add(107.5f);
+            locations.Add(81055);
+        }
+        
+        return locations;
     }
 
     private static List<object> getHordeFFR()
@@ -175,7 +225,6 @@ public class DraenorZones
         locations.Add(201.4f);
         locations.Add(76784);
         
-        Flight temp = new Flight();
         if (Flight.API.IsQuestCompleted(33657))
         {
             locations.Add("Bladespire Citadel, Frostfire Ridge");
@@ -188,3 +237,5 @@ public class DraenorZones
         return locations;
     }
 }
+
+

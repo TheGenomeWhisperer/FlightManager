@@ -44,7 +44,27 @@ public class Flight
             }
             int min = count / 60;
             int seconds = count % 60;
-            API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " seconds!");
+            if (min == 1 || seconds == 1)
+            {
+                if (min == 1 && seconds != 1)
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " seconds!");
+                }
+                else if (seconds == 1 && min != 1)
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " second!");
+                }
+                else
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " second!");                 
+                }
+                
+            }
+            else
+            {
+                API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " seconds!");              
+            }
+
         }
         else
         {
