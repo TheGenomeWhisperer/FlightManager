@@ -1,11 +1,14 @@
 
 public class DraenorZones
 {
+    public static Fiber<int> Fib;
+    public static bool IsSpecialPathingNeeded;
     public List<object> AllFPs;
 
     public DraenorZones(int zoneID, bool factionIsHorde)
     {
-        AllFPs = getDraenorInfo(zoneID, factionIsHorde);
+        IsSpecialPathingNeeded = false;
+        AllFPs = getDraenorInfo(zoneID, factionIsHorde);      
     }
 
     // Filters out returns by zone on the continent
@@ -16,6 +19,7 @@ public class DraenorZones
             // Frostfire Ridge (and caves and phases and Garrison)
             if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209 || zoneID == 7004 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329)
             {
+                IsSpecialPathingNeeded = true;
                 return getHordeFFR();
             }
 
@@ -28,6 +32,7 @@ public class DraenorZones
             // Talador (and caves and phases)
             if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
             {
+                IsSpecialPathingNeeded = true;
                 return getHordeTalador();
             }
 
@@ -116,64 +121,57 @@ public class DraenorZones
 
     private static List<object> getHordeSpires()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Apexis Excavation, Spires of Arak",384.3f,2444.4f,18.6f,84509};
+        List<object> list = new List<object>(){"Axefall, Spires of Arak",-353.3f,2280.9f,29.9f,82612};
+        locations.AddRange(list);
+        
+        return locations;
     }
 
     private static List<object> getHordeTalador()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Frostwolf Overlook, Talador",4003.6f,2135.9f,116.8f,81053};
+        List<object> list = new List<object>(){"Vol'jin's Pride, Talador",3251.7f,1594.3f,162.2f,81057};
+        locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Zangarra, Talador",3410.1f,1038.6f,178.3f,80932};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Durotan's Grasp, Talador",2808.7f,2519.8f,120.7f,81058};
+        locations.AddRange(list3);
+        List<object> list4 = new List<object>(){"Shattrath City, Talador",2727.0f,2775.8f,242.9f,81064};
+        locations.AddRange(list4);
+        List<object> list5 = new List<object>(){"Terokkar Refuge, Talador",2164.9f,1627.7f,131.4f,81354};
+        locations.AddRange(list5);
+        List<object> list6 = new List<object>(){"Exarch's Refuge, Talador",1726.3f,2575.4f,133.7,81078};
+        locations.AddRange(list6);
+                
+        return locations;
     }
 
     private static List<object> getHordeGorgrond()
     {
         List<object> locations = new List<object>(){"Iron Docks, Gorgrond",8486.2f,1544.2f,78.9f,84700};
-                        
-        locations.Add("Breaker's Crown, Gorgrond");
-        locations.Add(6591.3f);  
-        locations.Add(1313.9f);  
-        locations.Add(64.6f);
-        locations.Add(86492);
-        
-        locations.Add("Evermorn Springs, Gorgrond");
-        locations.Add(4822.8f);  
-        locations.Add(1670.8f);  
-        locations.Add(149.0f);    
-        locations.Add(84495);
-        
-        locations.Add("Bastion Rise, Gorgrond");
-        locations.Add(4649.9f);  
-        locations.Add(1187.5f);    
-        locations.Add(136.9f);
-        locations.Add(84508);
+        List<object> list = new List<object>() {"Breaker's Crown, Gorgrond",6591.3f,1313.9f,64.6f,86492};
+        locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Evermorn Springs, Gorgrond",4822.8f,1670.8f,149.0f,84495};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Bastion Rise, Gorgrond",4649.9f,1187.5f,136.9f,84508};
+        locations.AddRange(list3);
+
         
         if (Flight.API.Me.Level > 99)
         {
-            locations.Add("Skysea Ridge, Gorgrond");
-            locations.Add(7597.1f);
-            locations.Add(1828.0f);
-            locations.Add(79.1f);
-            locations.Add(85829);
-            
-            locations.Add("Everbloom Wilds, Gorgrond");
-            locations.Add(7091.7f);
-            locations.Add(406.8f);
-            locations.Add(112.0f);
-            locations.Add(84714);
-            
-            locations.Add("Everbloom Overlook, Gorgrond");
-            locations.Add(8019.4f);
-            locations.Add(-554.9f);
-            locations.Add(154.8f);  
-            locations.Add(88757);
+            List<object> list4 = new List<object>(){"Skysea Ridge, Gorgrond",7597.1f,1828.0f,79.1f,85829};
+            locations.AddRange(list4);
+            List<object> list5 = new List<object>(){"Everbloom Wilds, Gorgrond",7091.7f,406.8f,112.0f,84714};
+            locations.AddRange(list5);
+            List<object> list6 = new List<object>(){"Everbloom Overlook, Gorgrond",8019.4f,-554.9f,154.8f,88757};
+            locations.AddRange(list6);
         }
         
         if (Flight.API.IsQuestCompleted(35151))
         {
-            locations.Add("Beastwatch, Gorgrond");
-            locations.Add(5782.3f);
-            locations.Add(1292.7f);      
-            locations.Add(107.5f);
-            locations.Add(81055);
+            List<object> list7 = new List<object>(){"Beastwatch, Gorgrond",5782.3f,1292.7f,107.5f,81055};
+            locations.AddRange(list7);
         }
         
         return locations;
@@ -182,56 +180,25 @@ public class DraenorZones
     private static List<object> getHordeFFR()
     {
         List<object> locations = new List<object>(){"Frostwall Garrison, Frostfire Ridge",5579.5f,4565.3f,136.2f,79407};
-        
-        locations.Add("Stonefang Outpost, Frostfire Ridge");
-        locations.Add(6157.6f);
-        locations.Add(5052.4f);
-        locations.Add(134.3f);
-        locations.Add(76879);
-        
-        locations.Add("Wor'gol, Frostfire Ridge");
-        locations.Add(5988.7f);
-        locations.Add(6180.9f);
-        locations.Add(70.1f);
-        locations.Add(76782);
-        
-        locations.Add("Throm'Var, Frostfire Ridge");
-        locations.Add(7879.6f);
-        locations.Add(5560.2f);
-        locations.Add(111.1f);
-        locations.Add(76783);
-        
-        locations.Add("Bloodmaul Slag Mines, Frostfire Ridge");
-        locations.Add(7403.6f);
-        locations.Add(4356.3f);
-        locations.Add(126.4f);
-        locations.Add(76787);
-        
-        locations.Add("Darkspear's Edge, Frostfire Ridge");
-        locations.Add(6600.0f);
-        locations.Add(4342.5f);
-        locations.Add(91.1f);
-        locations.Add(78699);
-        
-        locations.Add("Wolf's Stand, Frostfire Ridge");
-        locations.Add(5830.9f);
-        locations.Add(3004.1f);
-        locations.Add(183.2f);
-        locations.Add(87707);
-        
-        locations.Add("Thunder Pass, Frostfire Ridge");
-        locations.Add(5788.9f);
-        locations.Add(2397.1f);
-        locations.Add(201.4f);
-        locations.Add(76784);
-        
+        List<object> list = new List<object>(){"Stonefang Outpost, Frostfire Ridge",6157.6f,5052.4f,134.3f,76879};
+        locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Wor'gol, Frostfire Ridge",5988.7f,6180.9f,70.1f,76782};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Throm'Var, Frostfire Ridge",7879.6f,5560.2f,111.1f,76783};
+        locations.AddRange(list3);
+        List<object> list4 = new List<object>(){"Bloodmaul Slag Mines, Frostfire Ridge",7403.6f,4356.3f,126.4f,76787};
+        locations.AddRange(list4);
+        List<object> list5 = new List<object>(){"Darkspear's Edge, Frostfire Ridge",6600.0f,4342.5f,91.1f,78699};
+        locations.AddRange(list5);
+        List<object> list6 = new List<object>(){"Wolf's Stand, Frostfire Ridge",5830.9f,3004.1f,183.2f,87707};
+        locations.AddRange(list6);
+        List<object> list7 = new List<object>(){"Thunder Pass, Frostfire Ridge",5788.9f,2397.1f,201.4f,76784};
+        locations.AddRange(list7);
+               
         if (Flight.API.IsQuestCompleted(33657))
         {
-            locations.Add("Bladespire Citadel, Frostfire Ridge");
-            locations.Add(6754.6f);
-            locations.Add(6012.5f);
-            locations.Add(250.0f);
-            locations.Add(76781);
+            List<object> list8 = new List<object>(){"Bladespire Citadel, Frostfire Ridge",6754.6f,6012.5f,250.0f,76781};
+            locations.AddRange(list8);
         }
         
         return locations;

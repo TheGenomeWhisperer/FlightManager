@@ -13,66 +13,13 @@ public class Flight
         destinationName = destination;
     }
     
-    // Empty Constructor sets destination to null
+    // Empty Constructor sets destination to empty
     public Flight() 
     {
         destinationName = "";
     }
-
-
-    public static IEnumerable<int> FlyTo(String destinationName)
-    {
-        var check = new Fiber<int>(ToFlightMaster());
-        while (check.Run())
-        {
-            yield return 100;
-        }
-        
-        // Now, determine if destinationName is Known.
-        if (IsKnown(destinationName))
-        {
-            destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
-            API.Print("Flying to " + destinationName + "! Yay!");
-            
-            // Flightpath waiting
-            yield return 5000;
-            int count = 5;
-            while (API.Me.IsOnTaxi)
-            {
-                yield return 1000;
-                count++;
-            }
-            int min = count / 60;
-            int seconds = count % 60;
-            if (min == 1 || seconds == 1)
-            {
-                if (min == 1 && seconds != 1)
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " seconds!");
-                }
-                else if (seconds == 1 && min != 1)
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " second!");
-                }
-                else
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " second!");                 
-                }
-                
-            }
-            else
-            {
-                API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " seconds!");              
-            }
-
-        }
-        else
-        {
-            API.Print("Unable to Find Desired Flight destination...");
-            // Create script that finds the furthest known FP and takes that...
-        }
-    }
-
+    
+    
     // Method:      "GetClosestFlight(string)"
     // Purpose:     Take an Object with all FPs of a given zone, then determine
     //               which one is the closest to the player to take.
@@ -81,8 +28,6 @@ public class Flight
         List<object> result = new List<object>();
         List<object> FPs = new List<object>();
 
-        int continentID = API.Me.ContinentID;
-        int zoneID = API.Me.ZoneId;
         float closestDistance;
         float tempDistance;
         int npcID;
@@ -91,7 +36,7 @@ public class Flight
         Vector3 position;
 
         // Obtaining List
-        FPs = getFlightMasterInfo(continentID, zoneID);
+        FPs = getFlightMasterInfo();
 
         // Setting the initial FP to the closest distance
         closestZone = (string)FPs[0];
@@ -122,15 +67,132 @@ public class Flight
     }
     
     
+    // Filters out returns by continent
+    public static List<object> getFlightMasterInfo()
+    {
+        List<object> result = new List<object>();
+        int continentID = API.Me.ContinentID;
+        int zoneID = API.Me.ZoneId;
+        bool factionIsHorde = API.Me.IsHorde;
+        
+        // Draenor Continent
+        if (continentID == 1116)
+        {
+            DraenorZones continent = new DraenorZones(zoneID, factionIsHorde);
+            return continent.AllFPs;
+        }
+        return result;
+
+        // All Continents Eventually to be Added
+    }
+    
+    
+    // Method:      "IsFPKnown(String)"
+    public static bool IsFPKnown(String destinationName)
+    {
+        // destinationName = destinationName.Localize();
+        return API.ExecuteLua<bool>("local known = false; for i=1,NumTaxiNodes() do if TaxiNodeName(i) == \"" + destinationName + "\" then known = true; TakeTaxiNode(i); break; end end return known;");
+    }
+    
+    
+    // Method:      "FlightMasterGossip()"
+    // Purpose:     Often Flightmasters have a lot of different Gossip options, like say, unfinished quests,
+    //              which will replace the normal gossip position on the flightmaster.  This finds the gossip option and 
+    //              selects the correct one.  This also brings in compatibility for ALL clients.
+    public static void FlightMasterGossip()
+    {
+        // Initializing Function
+        string title = "title0";
+        string luaCall = ("local title0,_ = GetGossipOptions(); if title0 ~= nil then return title0 else return \"nil\" end");
+        string result = API.ExecuteLua<string>(luaCall);
+        // Now Ready to Iterate through All Gossip Options!
+        // The reason "1" is used instead of the conventional "0" is because Gossip options start at 1.
+        int i = 1;
+        string num = "";
+        while (result != null)
+        {
+            if (result.Equals("Show me where I can fly.") || result.Equals("Muéstrame adónde puedo ir volando.") || result.Equals("Mostre-me para onde posso voar.") || result.Equals("Wohin kann ich fliegen?") || result.Equals("Muéstrame adónde puedo ir volando.") || result.Equals("Montrez-moi où je peux voler.") || result.Equals("Mostrami dove posso volare.") || result.Equals("Покажи, куда я могу отправиться.") || result.Equals("제가 날아갈 수 있는 곳을 알려 주십시오.") || result.Equals("告訴我可以飛往那些地方。") || result.Equals("告诉我可以飞到哪里去。"))
+            {
+                API.Print("Selection Found at Gossip Option " + i + ".");
+                API.ExecuteLua("SelectGossipOption(" + i + ");");
+                break;
+            }
+            else
+            {
+                // This builds the new string to be added into an Lua API call.
+                num = i.ToString();
+                title = (title.Substring(0,title.Length-1) + num);
+                luaCall = ("local " + title + ",_," + luaCall.Substring(6,luaCall.Length-6));
+                result = API.ExecuteLua<string>(luaCall);
+                i++;
+            }
+        }
+    }
+
+
+    public static IEnumerable<int> FlyTo(String destinationName)
+    {
+        var check = new Fiber<int>(ToFlightMaster());
+        while (check.Run())
+        {
+            yield return 100;
+        }
+        
+        // Now, determine if destinationName is Known.
+        if (IsFPKnown(destinationName))
+        {
+            destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
+            API.Print("Flying to " + destinationName + "! Yay!");
+            
+            // Flightpath waiting
+            yield return 5000;
+            int count = 5;
+            while (API.Me.IsOnTaxi)
+            {
+                yield return 1000;
+                count++;
+            }
+            int min = count / 60;
+            int seconds = count % 60;
+            if (min == 1 || seconds == 1)
+            {
+                if (min == 1 && seconds != 1)
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " seconds!");
+                }
+                else if (seconds == 1 && min != 1)
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " second!");
+                }
+                else
+                {
+                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " second!");                 
+                }
+            }
+            else
+            {
+                API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " seconds!");              
+            }
+        }
+        else
+        {
+            API.Print("Unable to Find Desired Flight destination...");
+            // Create script that finds the furthest known FP and takes that...
+        }
+    }
+        
+    
     // Method:      "ToFlightMaster(String)"
     public static IEnumerable<int> ToFlightMaster()
     {
+        // Casting all the Object to Types
         List<object> result = getClosestFlight();
         float distance = (float) result[2];
         distance = (int)Math.Ceiling(distance);
         int npcID = (int) result[3];
         string location = (string) result[0];
         location = location.Substring(0, location.IndexOf(','));
+        
         API.Print("The Flightpath Located at \"" + location + "\" is the Closest Known FP!");
         // String from plural to non. QoL thing only...
         if (distance == 1)
@@ -168,30 +230,34 @@ public class Flight
         // Interacting with the FlightMaster
         API.Me.Focus.Interact();
         yield return 1500;
-        API.ExecuteLua("GossipTitleButton1:Click()");
+        FlightMasterGossip();
         yield return 1000;
     }
 
-    // Method:      "IsKnown(String)"
-    public static bool IsKnown(String destinationName)
+    public static string LocalizeTool(string destinationName)
     {
-        return API.ExecuteLua<bool>("local known = false; for i=1,NumTaxiNodes() do if TaxiNodeName(i) == \"" + destinationName + "\" then known = true; TakeTaxiNode(i); break; end end return known;");
+            // Use int to word tool
+            return "";
     }
+    
+    // INITIAL
+    //  string result = "";
+    //  int count = 1;
+    //  for (int i = 1; i < 50; i++) {
+    //  	result += "string " + count + "  = \"" + ExecuteLua<string>("return TaxiNodeName(" + i + ")") + "\";\n";
+    //  	count ++;
+    //  }
+    //  result = result.Substring(0,result.Length-1);
+    //  Print(result);
+    
+    // SUBSEQUENT
+    //  string result = "";
+    //  int count = 1;
+    //  for (int i = 1; i < 50; i++) {
+    //  	result += count + "  += \"" + ExecuteLua<string>("return TaxiNodeName(" + i + ")") + "_\";\n";
+    //  	count ++;
+    //  }
+    //  result = result.Substring(0,result.Length-1);
+    //  Print(result);
 
-    // Filters out returns by continent
-    public static List<object> getFlightMasterInfo(int continentID, int zoneID)
-    {
-        List<object> result = new List<object>();
-        bool factionIsHorde = API.Me.IsHorde;
-        
-        // Draenor Continent
-        if (continentID == 1116)
-        {
-            DraenorZones continent = new DraenorZones(zoneID, factionIsHorde);
-            return continent.AllFPs;
-        }
-        return result;
-
-        // All Continents Eventually to be Added
-    }
 }
