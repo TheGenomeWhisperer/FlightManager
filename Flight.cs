@@ -25,7 +25,6 @@ public class Flight
     //               which one is the closest to the player to take.
     public static List<object> getClosestFlight()
     {
-        List<object> result = new List<object>();
         List<object> FPs = new List<object>();
 
         float closestDistance;
@@ -59,10 +58,7 @@ public class Flight
             }
         }
         // Creating list with the name of the closest flightpath with accompanying Vector3 position of Flightmaster
-        result.Add(closestZone);
-        result.Add(closestVector3);
-        result.Add(closestDistance);
-        result.Add(npcID);
+        List<object> result = new List<object>(){closestZone,closestVector3,closestDistance,npcID};
         return result;
     }
     
@@ -154,25 +150,17 @@ public class Flight
             }
             int min = count / 60;
             int seconds = count % 60;
-            if (min == 1 || seconds == 1)
+            string minute = "minutes";
+            string second = "seconds";
+            if (min == 1)
             {
-                if (min == 1 && seconds != 1)
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " seconds!");
-                }
-                else if (seconds == 1 && min != 1)
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " second!");
-                }
-                else
-                {
-                    API.Print("Player Arrived at their Destination After " + min + " minute and " + seconds + " second!");                 
-                }
+                minute = "minute";
             }
-            else
+            if (seconds == 1)
             {
-                API.Print("Player Arrived at their Destination After " + min + " minutes and " + seconds + " seconds!");              
+                second = "second";
             }
+            API.Print("Player Arrived at their Destination After " + min + " " + minute + " and " + seconds + " " + second + "!");
         }
         else
         {
