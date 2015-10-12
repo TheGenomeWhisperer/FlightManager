@@ -20,6 +20,52 @@ public class Flight
     }
     
     
+    // Method:      "FlyTo(string)"
+    // Sets up the initial command to send out the instructions to travel to a destination.
+    public static IEnumerable<int> FlyTo(String destinationName)
+    {
+        var check = new Fiber<int>(ToFlightMaster());
+        while (check.Run())
+        {
+            yield return 100;
+        }
+        
+        // Now, determine if destinationName is Known.
+        if (IsFPKnown(destinationName))
+        {
+            destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
+            API.Print("Flying to " + destinationName + "! Yay!");
+            
+            // Flightpath waiting
+            yield return 5000;
+            int count = 5;
+            while (API.Me.IsOnTaxi)
+            {
+                yield return 1000;
+                count++;
+            }
+            int min = count / 60;
+            int seconds = count % 60;
+            string minute = "minutes";
+            string second = "seconds";
+            if (min == 1)
+            {
+                minute = "minute";
+            }
+            if (seconds == 1)
+            {
+                second = "second";
+            }
+            API.Print("Player Arrived at their Destination After " + min + " " + minute + " and " + seconds + " " + second + "!");
+        }
+        else
+        {
+            API.Print("Unable to Find Desired Flight destination...");
+            // Create script that finds the furthest known FP and takes that...
+        }
+    }
+    
+    
     // Method:      "GetClosestFlight(string)"
     // Purpose:     Take an Object with all FPs of a given zone, then determine
     //               which one is the closest to the player to take.
@@ -124,51 +170,7 @@ public class Flight
             }
         }
     }
-
-
-    public static IEnumerable<int> FlyTo(String destinationName)
-    {
-        var check = new Fiber<int>(ToFlightMaster());
-        while (check.Run())
-        {
-            yield return 100;
-        }
-        
-        // Now, determine if destinationName is Known.
-        if (IsFPKnown(destinationName))
-        {
-            destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
-            API.Print("Flying to " + destinationName + "! Yay!");
-            
-            // Flightpath waiting
-            yield return 5000;
-            int count = 5;
-            while (API.Me.IsOnTaxi)
-            {
-                yield return 1000;
-                count++;
-            }
-            int min = count / 60;
-            int seconds = count % 60;
-            string minute = "minutes";
-            string second = "seconds";
-            if (min == 1)
-            {
-                minute = "minute";
-            }
-            if (seconds == 1)
-            {
-                second = "second";
-            }
-            API.Print("Player Arrived at their Destination After " + min + " " + minute + " and " + seconds + " " + second + "!");
-        }
-        else
-        {
-            API.Print("Unable to Find Desired Flight destination...");
-            // Create script that finds the furthest known FP and takes that...
-        }
-    }
-        
+   
     
     // Method:      "ToFlightMaster(String)"
     public static IEnumerable<int> ToFlightMaster()
@@ -191,6 +193,9 @@ public class Flight
         {
             API.Print("Traveling Roughly " + distance + " Yards to Get There...");
         }
+        
+        // This is where to add special pathing...
+        
         
         // Ok, time to move!
         Vector3 destination = (Vector3) result[1];
@@ -221,13 +226,7 @@ public class Flight
         FlightMasterGossip();
         yield return 1000;
     }
-
-    public static string LocalizeTool(string destinationName)
-    {
-            // Use int to word tool
-            return "";
-    }
-    
+  
     // INITIAL
     //  string result = "";
     //  int count = 1;
