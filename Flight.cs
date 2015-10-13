@@ -77,6 +77,7 @@ public class Flight
         float tempDistance;
         int npcID;
         string closestZone;
+        bool IsSpecialPathingNeeded;
         Vector3 closestVector3;
         Vector3 position;
 
@@ -88,10 +89,11 @@ public class Flight
         closestVector3 = new Vector3((float)FPs[1], (float)FPs[2], (float)FPs[3]);
         closestDistance = API.Me.Distance2DTo(closestVector3);
         npcID = (int)FPs[4];
+        IsSpecialPathingNeeded = (bool)FPs[5];
         
 
         // Filtering for Closest flight now.
-        for (int i = 0; i < FPs.Count - 4; i = i + 5)
+        for (int i = 0; i < FPs.Count - 5; i = i + 6)
         {
             position = new Vector3((float)FPs[i + 1], (float)FPs[i + 2], (float)FPs[i + 3]);
             tempDistance = API.Me.Distance2DTo(position);
@@ -101,10 +103,11 @@ public class Flight
                 closestVector3 = position;
                 closestZone = (string)FPs[i];
                 npcID = (int)FPs[i+4];
+                IsSpecialPathingNeeded = (bool)FPs[i+5];
             }
         }
         // Creating list with the name of the closest flightpath with accompanying Vector3 position of Flightmaster
-        List<object> result = new List<object>(){closestZone,closestVector3,closestDistance,npcID};
+        List<object> result = new List<object>(){closestZone,closestVector3,closestDistance,npcID,IsSpecialPathingNeeded};
         return result;
     }
     
@@ -120,8 +123,7 @@ public class Flight
         // Draenor Continent
         if (continentID == 1116)
         {
-            DraenorZones continent = new DraenorZones(zoneID, factionIsHorde);
-            return continent.AllFPs;
+            result = DraenorZones.getDraenorInfo(zoneID, factionIsHorde);
         }
         return result;
 
@@ -177,28 +179,34 @@ public class Flight
     {
         // Casting all the Object to Types
         List<object> result = getClosestFlight();
+        string location = (string) result[0];
+        Vector3 destination = (Vector3) result[1];
         float distance = (float) result[2];
         distance = (int)Math.Ceiling(distance);
         int npcID = (int) result[3];
-        string location = (string) result[0];
+        bool IsSpecialPathingNeeded = (bool) result[4];
         location = location.Substring(0, location.IndexOf(','));
         
         API.Print("The Flightpath Located at \"" + location + "\" is the Closest Known FP!");
+        string yards = "Yards";
         // String from plural to non. QoL thing only...
         if (distance == 1)
         {
-            API.Print("Traveling Roughly " + distance + " Yard to Get There...");
+            yards = "Yard";
         }
-        else
+        API.Print("Traveling Roughly " + distance + " " + yards + " to Get There...");
+    
+        // This is where to add special pathing considerations.
+        if (IsSpecialPathingNeeded)
         {
-            API.Print("Traveling Roughly " + distance + " Yards to Get There...");
+            var check = new Fiber<int>(DraenorZones.doSpecialPathing());
+            while (check.Run())
+            {
+                yield return 100;
+            }
         }
-        
-        // This is where to add special pathing...
-        
-        
+
         // Ok, time to move!
-        Vector3 destination = (Vector3) result[1];
         while (!API.MoveTo(destination))
         {
             yield return 100;
