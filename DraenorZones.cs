@@ -59,6 +59,7 @@ public class DraenorZones
             // Ashran (and mine)
             if (zoneID == 6941 || zoneID == 7548)
             {
+                IsSpecialPathingNeeded = true;
                 return getHordeAshran();
             }
 
@@ -66,12 +67,6 @@ public class DraenorZones
             if (zoneID == 7333)
             {
                 return getHordeWarspear();
-            }
-
-            // Stormshield
-            if (zoneID == 7332)
-            {
-                return getHordeStormshield();
             }
         }
         else
@@ -85,19 +80,18 @@ public class DraenorZones
     }
 
     // Return for all of these will be in the following format (XYZ = V3 coordinates):  List<object> zoneFlightInfo = {FPName,X,Y,Z,npcID, FPName,X,Y,Z,npcID, ...)
-    private static List<object> getHordeStormshield()
-    {
-        throw new NotImplementedException();
-    }
-
     private static List<object> getHordeWarspear()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Warspear, Ashran",5312.5f,-3980.3f,18.2f,86049,IsSpecialPathingNeeded};
+        
+        return locations;  
     }
 
     private static List<object> getHordeAshran()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Warspear, Ashran",5312.5f,-3980.3f,18.2f,86049,IsSpecialPathingNeeded};
+        
+        return locations;
     }
 
     private static List<object> getHordeTanaan()
@@ -107,7 +101,24 @@ public class DraenorZones
 
     private static List<object> getHordeSMV()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Akeeta's Hovel, Shadowmoon Valley",659.8f,718.0f,109.5f,88584,IsSpecialPathingNeeded};
+        List<object> list = new List<object>(){"Exile's Rise, Shadowmoon Valley",1515.5f,-797.9f,40.9f,76850,IsSpecialPathingNeeded};
+        locations.AddRange(list);
+        
+        if (Flight.API.Me.Level > 99)
+        {
+            List<object> list2 = new List<object>(){"Socrethar's Rise, Shadowmoon Valley",-792.1f,-679.7f,105.5f,81285,IsSpecialPathingNeeded};
+            locations.AddRange(list2);  
+        }
+        
+        Vector3 smv = new Vector3(-1383.1f, -1717.4f, 109.3f);
+        if (Flight.API.Me.Distance2DTo(smv) < 525)
+        {
+            List<object> list3 = new List<object>(){"Darktide Roost, Shadowmoon Valley",-973.2f,-1731f,2.9f,83427,IsSpecialPathingNeeded};
+            locations.AddRange(list3);
+        }
+        
+        return locations;
     }
 
     private static List<object> getHordeNagrand()
@@ -120,8 +131,23 @@ public class DraenorZones
         List<object> locations = new List<object>(){"Apexis Excavation, Spires of Arak",384.3f,2444.4f,18.6f,84509,IsSpecialPathingNeeded};
         List<object> list = new List<object>(){"Axefall, Spires of Arak",-353.3f,2280.9f,29.9f,82612,IsSpecialPathingNeeded};
         locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Veil Terokk, Spires of Arak",-395.1f,1874.7f,51.5f,84498,IsSpecialPathingNeeded};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Crow's Crook, Spires of Arak",128.8f,1559.3f,-1.8f,84515,IsSpecialPathingNeeded};
+        locations.AddRange(list3);
+        List<object> list4 = new List<object>(){"Talon Watch, Spires of Arak",-338.4f,918.5f,75.0f,84504,IsSpecialPathingNeeded};
+        locations.AddRange(list4);
+        List<object> list5 = new List<object>(){"Pinchwhistle Gearworks, Spires of Arak",-1569.4f,994.7f,7.5f,82511,IsSpecialPathingNeeded};
+        locations.AddRange(list5);
         
-        return locations;
+        Vector3 spires = new Vector3(413.8f, 842.6f, 86.7f);
+        if (Flight.API.Me.Distance2DTo(spires) < 500)
+        {
+            List<object> list6 = new List<object>(){"Akeeta's Hovel, Shadowmoon Valley",659.8f,718.0f,109.5f,88584,IsSpecialPathingNeeded};
+            locations.AddRange(list6);  
+        }
+        
+        return locations;  
     }
 
     private static List<object> getHordeTalador()
@@ -336,13 +362,29 @@ public class DraenorZones
                 Flight.API.Print("Let's Get to that Flightpath and Get Out of Here!");
                 yield break;
             }
-            
-            
-            // Additional Talador pathing issues to be added here...
-            
+            yield break;     
         }
         // End Talador
         
+        
+        // ASHRAN SPECIAL PATHING!
+        //
+        // BEGIN
+        if (zoneID == 6941 || zoneID == 7548)
+        {
+            Flight.API.Print("Woah! Let's Get Out of Ashran Before Some Alliance Find You!");
+            Vector3 ash = new Vector3(5090.1f, -3982.3f, 20.8f);
+            while(!Flight.API.MoveTo(ash))
+            {
+                yield return 100;
+            }
+            Vector3 ash2 = new Vector3(5141.9f, -3964.1f, 2.2f);
+            while(!Flight.API.MoveTo(ash2))
+            {
+                yield return 100;
+            }
+            yield break;
+        }
         yield return 100;
     }
     
