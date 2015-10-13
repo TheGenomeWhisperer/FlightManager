@@ -187,7 +187,7 @@ public class Flight
         bool IsSpecialPathingNeeded = (bool) result[4];
         location = location.Substring(0, location.IndexOf(','));
         
-        API.Print("The Flightpath Located at \"" + location + "\" is the Closest Known FP!");
+        API.Print("The Closest Known Flightpath is Located at \"" + location + "\"");
         string yards = "Yards";
         // String from plural to non. QoL thing only...
         if (distance == 1)
