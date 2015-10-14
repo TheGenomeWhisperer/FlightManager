@@ -1,3 +1,12 @@
+/*  FlightManager
+|   Author: @Sklug  aka TheGenomeWhisperer
+|
+|   To Be Used with "Flight.cs" and "InsertContinentName.cs" class
+|   For use in collaboration with the Rebot API 
+|
+|   Last Update 14th Oct, 2015 */
+
+
 public class Localization
 {
 	// Default Constructor
@@ -684,3 +693,5 @@ public class Localization
 		return list;
 	}
 }
+
+// '，' = 65292   ASC value.

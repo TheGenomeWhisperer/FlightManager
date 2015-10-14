@@ -1,4 +1,10 @@
-// This will be the Flight Manager
+/*  FlightManager
+|   Author: @Sklug  aka TheGenomeWhisperer
+|
+|   To Be Used with "InsertContinentName.cs" and "Localization.cs" class
+|   For use in collaboration with the Rebot API 
+|
+|   Last Update 14th Oct, 2015 */
 
 
 public class Flight
@@ -6,15 +12,15 @@ public class Flight
     public static ReBotAPI API;
     public static Fiber<int> Fib;
     
-    // Empty Constructor sets destination to empty
+    // Default Constructor
     public Flight() {}
     
     
     // Method:      "FlyTo(string)"
     // Sets up the initial command to send out the instructions to travel to a destination.
-    public static IEnumerable<int> FlyTo(string destinationName)
+    public static IEnumerable<int> FlyTo(string destination)
     {
-        //  string destinationName = Localization.Localize(destination);
+        string destinationName = Localization.Localize(destination);
         var check = new Fiber<int>(ToFlightMaster());
         while (check.Run())
         {
@@ -24,6 +30,7 @@ public class Flight
         // Interacting with the FlightMaster
         if (API.Me.Focus != null)
         {
+            // Verifying Interaction success
             while (!IsFlightMapOpen())
             {
                 API.Me.Focus.Interact();
@@ -31,17 +38,25 @@ public class Flight
                 if (!IsFlightMapOpen())
                 {
                     FlightMasterGossip();
-                    yield return 1000;
+                    yield return 2000;
                 }
             }
         }
-        
         // Now, determine if destinationName is Known.
         if (IsFlightMapOpen())
         {
             if (IsFPKnown(destinationName))
             {
-                destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
+                // Chinese/Taiwanese character comma is different.
+                if (destinationName.IndexOf('，') != -1)
+                {
+                    destinationName = destinationName.Substring(0, destinationName.IndexOf('，'));
+                }
+                else
+                {
+                    destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
+                }
+                
                 API.Print("Flying to " + destinationName + "! Yay!");
                 
                 yield return 5000;
@@ -76,7 +91,7 @@ public class Flight
     
     // Method:      "GetClosestFlight(string)"
     // Purpose:     Take an Object with all FPs of a given zone, then determine
-    //               which one is the closest to the player to take.
+    //              which one is the closest to the player to take.
     public static List<object> getClosestFlight()
     {
         List<object> FPs = new List<object>();
@@ -141,8 +156,6 @@ public class Flight
         
         // All Continents Eventually to be Added
         return result;
-
-        
     }
     
     
@@ -154,10 +167,19 @@ public class Flight
     
     
     // Method:      "IsFPKnown(String)"
-    public static bool IsFPKnown(String destinationName)
+    public static bool IsFPKnown(string destinationName)
     {
-        // destinationName = destinationName.Localize();
-        return API.ExecuteLua<bool>("local known = false; for i=1,NumTaxiNodes() do if TaxiNodeName(i) == \"" + destinationName + "\" then known = true; TakeTaxiNode(i); break; end end return known;");
+        bool hasNode = false;
+        for (int i = 1; i <= API.ExecuteLua<int>("return NumTaxiNodes()"); i++)
+        {
+            if (API.ExecuteLua<string>("return TaxiNodeName(" + i + ")").Equals(destinationName))
+            {
+                API.ExecuteLua("TakeTaxiNode(" + i + ")");
+                hasNode = true;
+                break;
+            }
+        }
+        return hasNode;
     }
     
     

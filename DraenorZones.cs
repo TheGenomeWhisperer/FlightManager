@@ -1,3 +1,11 @@
+/*  FlightManager
+|   Author: @Sklug  aka TheGenomeWhisperer
+|
+|   To Be Used with "Flight.cs" and "Localization.cs" class
+|   For use in collaboration with the Rebot API 
+|
+|   Last Update 14th Oct, 2015 */
+
 
 public class DraenorZones
 {
