@@ -5,25 +5,16 @@ public class Flight
 {
     public static ReBotAPI API;
     public static Fiber<int> Fib;
-    public string destinationName;
-    
-    // With a destination
-    public Flight(string destination)
-    {
-        destinationName = destination;
-    }
     
     // Empty Constructor sets destination to empty
-    public Flight() 
-    {
-        destinationName = "";
-    }
+    public Flight() {}
     
     
     // Method:      "FlyTo(string)"
     // Sets up the initial command to send out the instructions to travel to a destination.
-    public static IEnumerable<int> FlyTo(String destinationName)
+    public static IEnumerable<int> FlyTo(string destinationName)
     {
+        //  string destinationName = Localization.Localize(destination);
         var check = new Fiber<int>(ToFlightMaster());
         while (check.Run())
         {
@@ -188,7 +179,6 @@ public class Flight
         {
             if (result.Equals("Show me where I can fly.") || result.Equals("Muéstrame adónde puedo ir volando.") || result.Equals("Mostre-me para onde posso voar.") || result.Equals("Wohin kann ich fliegen?") || result.Equals("Muéstrame adónde puedo ir volando.") || result.Equals("Montrez-moi où je peux voler.") || result.Equals("Mostrami dove posso volare.") || result.Equals("Покажи, куда я могу отправиться.") || result.Equals("제가 날아갈 수 있는 곳을 알려 주십시오.") || result.Equals("告訴我可以飛往那些地方。") || result.Equals("告诉我可以飞到哪里去。"))
             {
-                API.Print("Selection Found at Gossip Option " + i + ".");
                 API.ExecuteLua("SelectGossipOption(" + i + ");");
                 break;
             }
