@@ -96,7 +96,19 @@ public class DraenorZones
 
     private static List<object> getHordeTanaan()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Vol'mar, Tanaan Jungle",4304.4f,-1475.0f,79.8f,90550,IsSpecialPathingNeeded};
+        List<object> list = new List<object>(){"The Iron Front, Tanaan Jungle",3972.1f,1204.6f,164.7f,90552,IsSpecialPathingNeeded};
+        locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Sha'naari Refuge, Tanaan Jungle",3727.7f,158.0f,56.1f,92809,IsSpecialPathingNeeded};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Aktar's Post, Tanaan Jungle",4562.1f,338.7f,220.8f,90560,IsSpecialPathingNeeded};
+        locations.AddRange(list3);
+        List<object> list4 = new List<object>(){"Vault of the Earth, Tanaan Jungle",3488.4f,-769.6f,39.7f,90562,IsSpecialPathingNeeded};
+        locations.AddRange(list4);
+        List<object> list5 = new List<object>(){"Malo's Lookout, Tanaan Jungle",4461.8f,-572.6f,49.4f,92808,IsSpecialPathingNeeded};
+        locations.AddRange(list5);
+        
+        return locations;
     }
 
     private static List<object> getHordeSMV()
@@ -123,7 +135,21 @@ public class DraenorZones
 
     private static List<object> getHordeNagrand()
     {
-        throw new NotImplementedException();
+        List<object> locations = new List<object>(){"Nivek's Overlook, Nagrand",2054.2f,6506.9f,32.3f,88653,IsSpecialPathingNeeded};
+        List<object> list = new List<object>(){"The Ring of Trials, Nagrand",3037.7f,4787.5f,127.9f,83924,IsSpecialPathingNeeded};
+        locations.AddRange(list);
+        List<object> list2 = new List<object>(){"Wor'var, Nagrand",3239.8f,4590.5f,144.7f,82346,IsSpecialPathingNeeded};
+        locations.AddRange(list2);
+        List<object> list3 = new List<object>(){"Throne of the Elements, Nagrand",3914.6f,5126.0f,62.4f,82844,IsSpecialPathingNeeded};
+        locations.AddRange(list3);
+        List<object> list4 = new List<object>(){"Joz's Rylaks, Nagrand",3653.4f,5774.5f,42.6f,88668,IsSpecialPathingNeeded};
+        locations.AddRange(list4);
+        List<object> list5 = new List<object>(){"Rilzit's Holdfast, Nagrand",3729.4f,6467.6f,6.9f,87395,IsSpecialPathingNeeded};
+        locations.AddRange(list5);
+        List<object> list6 = new List<object>(){"Riverside Post, Nagrand",3094.5f,6519.5f,12.7f,82340,IsSpecialPathingNeeded};
+        locations.AddRange(list6);
+        
+        return locations;
     }
 
     private static List<object> getHordeSpires()
@@ -385,7 +411,9 @@ public class DraenorZones
             }
             yield break;
         }
-        yield return 100;
+        
+        // Enter any additional pathing.
+        yield break;
     }
     
     
@@ -492,15 +520,4 @@ public class DraenorZones
         }
         Flight.API.DisableCombat = false;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
-
-

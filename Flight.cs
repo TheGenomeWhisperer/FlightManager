@@ -30,33 +30,50 @@ public class Flight
             yield return 100;
         }
         
-        // Now, determine if destinationName is Known.
-        if (IsFPKnown(destinationName))
+        // Interacting with the FlightMaster
+        if (API.Me.Focus != null)
         {
-            destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
-            API.Print("Flying to " + destinationName + "! Yay!");
-            
-            // Flightpath waiting
-            yield return 5000;
-            int count = 5;
-            while (API.Me.IsOnTaxi)
+            while (!IsFlightMapOpen())
             {
-                yield return 1000;
-                count++;
+                API.Me.Focus.Interact();
+                yield return 1500;
+                if (!IsFlightMapOpen())
+                {
+                    FlightMasterGossip();
+                    yield return 1000;
+                }
             }
-            int min = count / 60;
-            int seconds = count % 60;
-            string minute = "minutes";
-            string second = "seconds";
-            if (min == 1)
+        }
+        
+        // Now, determine if destinationName is Known.
+        if (IsFlightMapOpen())
+        {
+            if (IsFPKnown(destinationName))
             {
-                minute = "minute";
+                destinationName = destinationName.Substring(0, destinationName.IndexOf(','));
+                API.Print("Flying to " + destinationName + "! Yay!");
+                
+                yield return 5000;
+                int count = 6;
+                while (API.Me.IsOnTaxi)
+                {
+                    yield return 1000;
+                    count++;
+                }
+                int min = count / 60;
+                int seconds = count % 60;
+                string minute = "minutes";
+                string second = "seconds";
+                if (min == 1)
+                {
+                    minute = "minute";
+                }
+                if (seconds == 1)
+                {
+                    second = "second";
+                }
+                API.Print("Player Arrived at their Destination After " + min + " " + minute + " and " + seconds + " " + second + "!");
             }
-            if (seconds == 1)
-            {
-                second = "second";
-            }
-            API.Print("Player Arrived at their Destination After " + min + " " + minute + " and " + seconds + " " + second + "!");
         }
         else
         {
@@ -72,42 +89,47 @@ public class Flight
     public static List<object> getClosestFlight()
     {
         List<object> FPs = new List<object>();
-
-        float closestDistance;
-        float tempDistance;
-        int npcID;
-        string closestZone;
-        bool IsSpecialPathingNeeded;
-        Vector3 closestVector3;
-        Vector3 position;
+        List<object> result = new List<object>();
 
         // Obtaining List
         FPs = getFlightMasterInfo();
-
-        // Setting the initial FP to the closest distance
-        closestZone = (string)FPs[0];
-        closestVector3 = new Vector3((float)FPs[1], (float)FPs[2], (float)FPs[3]);
-        closestDistance = API.Me.Distance2DTo(closestVector3);
-        npcID = (int)FPs[4];
-        IsSpecialPathingNeeded = (bool)FPs[5];
         
-
-        // Filtering for Closest flight now.
-        for (int i = 0; i < FPs.Count - 5; i = i + 6)
+        if (FPs.Count != 0)
         {
-            position = new Vector3((float)FPs[i + 1], (float)FPs[i + 2], (float)FPs[i + 3]);
-            tempDistance = API.Me.Distance2DTo(position);
-            if (tempDistance < closestDistance)
+            float closestDistance;
+            float tempDistance;
+            int npcID;
+            string closestZone;
+            bool IsSpecialPathingNeeded;
+            Vector3 closestVector3;
+            Vector3 position;
+        
+            // Setting the initial FP to the closest distance
+            closestZone = (string)FPs[0];
+            closestVector3 = new Vector3((float)FPs[1], (float)FPs[2], (float)FPs[3]);
+            closestDistance = API.Me.Distance2DTo(closestVector3);
+            npcID = (int)FPs[4];
+            IsSpecialPathingNeeded = (bool)FPs[5];
+            
+    
+            // Filtering for Closest flight now.
+            for (int i = 0; i < FPs.Count - 5; i = i + 6)
             {
-                closestDistance = tempDistance;
-                closestVector3 = position;
-                closestZone = (string)FPs[i];
-                npcID = (int)FPs[i+4];
-                IsSpecialPathingNeeded = (bool)FPs[i+5];
+                position = new Vector3((float)FPs[i + 1], (float)FPs[i + 2], (float)FPs[i + 3]);
+                tempDistance = API.Me.Distance2DTo(position);
+                if (tempDistance < closestDistance)
+                {
+                    closestDistance = tempDistance;
+                    closestVector3 = position;
+                    closestZone = (string)FPs[i];
+                    npcID = (int)FPs[i+4];
+                    IsSpecialPathingNeeded = (bool)FPs[i+5];
+                }
             }
+            // Creating list with the name of the closest flightpath with accompanying Vector3 position of Flightmaster
+            List<object> final = new List<object>(){closestZone,closestVector3,closestDistance,npcID,IsSpecialPathingNeeded};
+            result.AddRange(final);
         }
-        // Creating list with the name of the closest flightpath with accompanying Vector3 position of Flightmaster
-        List<object> result = new List<object>(){closestZone,closestVector3,closestDistance,npcID,IsSpecialPathingNeeded};
         return result;
     }
     
@@ -125,10 +147,19 @@ public class Flight
         {
             result = DraenorZones.getDraenorInfo(zoneID, factionIsHorde);
         }
+        
+        // All Continents Eventually to be Added
         return result;
 
-        // All Continents Eventually to be Added
+        
     }
+    
+    
+    // Method:      "IsFlightMapOpen()"
+    public static bool IsFlightMapOpen()
+	{
+		return Flight.API.ExecuteLua<bool>("if TaxiNodeName(1) ~= \"INVALID\" then return true else return false end");
+	}
     
     
     // Method:      "IsFPKnown(String)"
@@ -177,8 +208,17 @@ public class Flight
     // Method:      "ToFlightMaster(String)"
     public static IEnumerable<int> ToFlightMaster()
     {
-        // Casting all the Object to Types
         List<object> result = getClosestFlight();
+        
+        // If Empty Result, Zone not known.
+        if (result.Count == 0)
+        {
+            API.Print("Unfortunately the Zone Your Are in Does Not Have the Flightpaths Mapped yet!");
+            API.Print("It Would Be Amazing if You Could Report Back on the Forums Your Location. Thank you!");
+            yield break;
+        }
+        
+        // Casting all the Object to Types
         string location = (string) result[0];
         Vector3 destination = (Vector3) result[1];
         float distance = (float) result[2];
@@ -199,11 +239,20 @@ public class Flight
         // This is where to add special pathing considerations.
         if (IsSpecialPathingNeeded)
         {
-            var check = new Fiber<int>(DraenorZones.doSpecialPathing());
-            while (check.Run())
+            if (API.Me.ContinentID == 1116)
             {
-                yield return 100;
+                var check = new Fiber<int>(DraenorZones.doSpecialPathing());
+                while (check.Run())
+                {
+                    yield return 100;
+                }
             }
+            
+            // Add connections to other Classes There...
+            //  else if (API.Me.ContinentID == 1)
+            //  {
+                
+            //  }
         }
 
         // Ok, time to move!
@@ -224,35 +273,9 @@ public class Flight
         }
         
         // Edging closer to FlightMaster
-        while(!API.MoveTo(API.Me.Focus.Position))
+        while(API.Me.Focus != null && !API.MoveTo(API.Me.Focus.Position))
         {
             yield return 100;
         }
-        // Interacting with the FlightMaster
-        API.Me.Focus.Interact();
-        yield return 1500;
-        FlightMasterGossip();
-        yield return 1000;
     }
-  
-    // INITIAL
-    //  string result = "";
-    //  int count = 1;
-    //  for (int i = 1; i < 50; i++) {
-    //  	result += "string " + count + "  = \"" + ExecuteLua<string>("return TaxiNodeName(" + i + ")") + "\";\n";
-    //  	count ++;
-    //  }
-    //  result = result.Substring(0,result.Length-1);
-    //  Print(result);
-    
-    // SUBSEQUENT
-    //  string result = "";
-    //  int count = 1;
-    //  for (int i = 1; i < 50; i++) {
-    //  	result += count + "  += \"" + ExecuteLua<string>("return TaxiNodeName(" + i + ")") + "_\";\n";
-    //  	count ++;
-    //  }
-    //  result = result.Substring(0,result.Length-1);
-    //  Print(result);
-
 }
