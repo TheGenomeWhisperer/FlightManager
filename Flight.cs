@@ -12,7 +12,7 @@ public class Flight
     public static ReBotAPI API;
     public static Fiber<int> Fib;
     
-    // Default Constructor
+    // Empty Constructor sets destination to empty
     public Flight() {}
     
     
@@ -30,7 +30,6 @@ public class Flight
         // Interacting with the FlightMaster
         if (API.Me.Focus != null)
         {
-            // Verifying Interaction success
             while (!IsFlightMapOpen())
             {
                 API.Me.Focus.Interact();
@@ -91,7 +90,7 @@ public class Flight
     
     // Method:      "GetClosestFlight(string)"
     // Purpose:     Take an Object with all FPs of a given zone, then determine
-    //              which one is the closest to the player to take.
+    //               which one is the closest to the player to take.
     public static List<object> getClosestFlight()
     {
         List<object> FPs = new List<object>();
@@ -156,6 +155,8 @@ public class Flight
         
         // All Continents Eventually to be Added
         return result;
+
+        
     }
     
     
