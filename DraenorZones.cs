@@ -536,6 +536,12 @@ public class DraenorZones
                 position2 = Math.Sqrt(Flight.API.Me.DistanceSquaredTo(unit));
                 yield return 100;
                 
+                // Some Added Redundancy to not attempt to take the elevator if it just arrived
+                // Lest you try to hop on right before it moves away.
+                while (Math.Sqrt(Merchant.API.Me.DistanceSquaredTo(unit)) <= 20.0) {
+                    yield return 100;
+                }
+                
                 // The two positional checks right after each other are to determine movement of the elevator.
                 // if they are equal, elevator is not moving, but if they are different, like the second location is further than the first,
                 // then it can easily be determined it is moving away from you.
