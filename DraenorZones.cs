@@ -4,7 +4,7 @@
 |   To Be Used with "Flight.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update 14th Oct, 2015 */
+|   Last Update Nov 3rd, 2015 */
 
 
 public class DraenorZones
@@ -462,7 +462,7 @@ public class DraenorZones
             if (Flight.API.Me.Level > 99 && Flight.API.Me.Distance2DTo(shatt2) < 430 && Flight.API.Me.Position.Z < 125)
             {
                 Flight.API.Print("Let's Move out of Shattrath. The elevator in the Sha'tari Market District Looks Good...");
-                var check = new Fiber<int>(QH.TakeElevator(231934,7,2687.2f,3017.5f,69.5f,2682.8f,2995.0f,233.9f));
+                var check = new Fiber<int>(TakeElevator(231934,7,2687.2f,3017.5f,69.5f,2682.8f,2995.0f,233.9f));
                 while (check.Run())
                 {
                     yield return 100;
@@ -538,7 +538,7 @@ public class DraenorZones
                 
                 // Some Added Redundancy to not attempt to take the elevator if it just arrived
                 // Lest you try to hop on right before it moves away.
-                while (Math.Sqrt(Merchant.API.Me.DistanceSquaredTo(unit)) <= 20.0) {
+                while (Math.Sqrt(Flight.API.Me.DistanceSquaredTo(unit)) <= 20.0) {
                     yield return 100;
                 }
                 
@@ -607,5 +607,46 @@ public class DraenorZones
             yield break;
         }
         Flight.API.DisableCombat = false;
+    }
+    
+    // Method:          "GTownHallExit()"
+    // What it does:    Navigates out of a lvl 2 or 3 Garrison Town Hall (Horde)
+    // Purpose:         Rebot has serious Mesh issues when starting a script within a Garrison
+    //                  But, even worse, starting within a town hall.  This solves this issue
+    //                  by using Click-To-Move actions to navigate out of the town hall successfully.
+    //                  This is best used in the "initialization" stage of a script, or to be implemented
+    //                  immediately after hearthing to the Garrison.
+    public static IEnumerable<int> GTownHallExit()
+    {
+        int tier = Flight.API.ExecuteLua<int>("local level = C_Garrison.GetGarrisonInfo(); return level;");
+        string zone = Flight.API.ExecuteLua<string>("local zone = GetMinimapZoneText(); return zone;");
+        Vector3 location = new Vector3(5559.2f, 4604.8f, 141.7f);
+        Vector3 location2 = new Vector3(5562.576f, 4601.484f, 141.7169f);
+        Vector3 location3 = new Vector3(5576.729f, 4584.367f, 141.0846f);
+        Vector3 location4 = new Vector3(5591.181f, 4569.721f, 136.2159f);
+        
+        if (Flight.API.Me.Distance2DTo(location) < 25 && Flight.API.IsInGarrison && (tier == 2 || tier == 3))
+        {
+            // If I do not disable Flightmaster discovery, then it tries to run to flightmaster BEFORE executing CTM actions
+            // which with the lack of a mesh, often results in the player just running helplessly into the wall with mesh errors spamming.
+            Flight.API.GlobalBotSettings.FlightMasterDiscoverRange = 0.0f;
+            while(Flight.API.Me.Distance2DTo(location2) > 5)
+            {
+                Flight.API.CTM(location2);
+                yield return 100;
+            }
+            while(Flight.API.Me.Distance2DTo(location3) > 5)
+            {
+                Flight.API.CTM(location3);
+                yield return 100;
+            }
+            while(Flight.API.Me.Distance2DTo(location4) > 5)
+            {
+                Flight.API.CTM(location4);
+                yield return 100;
+            }
+            Flight.API.GlobalBotSettings.FlightMasterDiscoverRange = 75.0f;
+        }
+        yield break;
     }
 }
