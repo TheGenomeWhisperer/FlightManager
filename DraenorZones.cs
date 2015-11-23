@@ -4,7 +4,7 @@
 |   To Be Used with "Flight.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update Nov 3rd, 2015 */
+|   Last Update Nov 23rd, 2015 */
 
 
 public class DraenorZones
@@ -337,161 +337,216 @@ public class DraenorZones
     {
         int zoneID = Flight.API.Me.ZoneId;
         
+        if (Merchant.API.Me.IsHorde) {
         // FROSTFIRE RIDGE ZONE SPECIAL PATHING!
-        //
-        if (Flight.API.IsInGarrison)
-        {
-            var check = new Fiber<int>(QH.GTownHallExit());
-            while (check.Run()){
-                yield return 100;
-            }
-        }       
-        
-        // TALADOR ZONE SPECIAL PATHING!!!!!
-        //
-        // Each Special condition is labeled.
-        if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
-        {
-            // To Navigate out of Gordal Fortress and safely get around the energy Barrier.
-            // Initial logic is a positional check to see if player is inside the Fortress.
-            // LOCATION 1
-            Vector3 gord1 = new Vector3(1410f, 1728.5f, 310.3f);
-            if (Flight.API.Me.Distance2DTo(gord1) < 390)
-            {
-                Vector3 gord2 = new Vector3(1666.5f, 1743.6f, 298.6f);
-                if ((Flight.API.Me.Position.Z > 302.4) || ((Flight.API.Me.Position.Z > 296.0) && (Flight.API.Me.Distance2DTo(gord2) > 47.05)))
-                {
-                    Flight.API.Print("It Appears that You are in Gordal Fortress! Navigating Out...");
-                    // Guided pathing out of Gordal Fortress
-                    Vector3 gord3 = new Vector3(1645.4f, 1767.4f, 312.5f);
-                    Vector3 gord4 = new Vector3(1674.5f, 1729.1f, 291.4f);
-                    while (!Flight.API.MoveTo(gord3))
-                    {
+            if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209 || zoneID == 7004 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329) {
+                
+                Vector3 location = new Vector3(5419.3f, 4900.0f, 55.3f);
+                Vector3 location2 = new Vector3(5312.3f, 5009.5f, 5.0f);
+                Vector3 location3 = new Vector3(5411.1f, 5012.9f, 3f);
+                
+                // At the docks
+                if (Flight.API.Me.Distance2DTo(location2) < 90 || Flight.API.Me.Distance2DTo(location3) < 40 && !Flight.API.IsInGarrison) {
+                    var check = new Fiber<int>(HearthToGarrison());
+                    while (check.Run()) {
                         yield return 100;
                     }
-                    Flight.API.Print("Let's Avoid that Energy Barrier!");
-                    while(!Flight.API.CTM(gord4))
-                    {
-                        yield return 100;
+                    yield return 1000;
+                    if (!Flight.API.IsInGarrison) {
+                        Flight.API.Print("WARNING!!! Serious mesh issues at the docks. Please move up to the garrison manually and restart.");
                     }
-                    Flight.API.Print("Alright! Back on Track!!!");
                 }
-                yield break;
+                
+                // Moving up from the docks - compensating for mesh issues.
+                if (Flight.API.Me.Distance2DTo(location) < 200 && !Flight.API.IsInGarrison) {
+                    Flight.API.Print("Heading from the Shipyard Back to Your Garrison!");
+                    
+                    while (!Flight.API.MoveTo(5475.7f, 4878.2f, 76.6f)) {
+                        yield return 100;
+                    }
+                    
+                    while (!Flight.API.MoveTo(5473.5f, 4808.1f, 113.2f)) {
+                        yield return 100;
+                    }
+                    
+                    while (!Flight.API.MoveTo(5464.6f, 4773.1f, 124.3f)) {
+                        yield return 100;
+                    }
+                    
+                    while (!Flight.API.MoveTo(5545.9f, 4723.0f, 151.3f)) {
+                        yield return 100;
+                    }
+                    // To Pause and let mesh load.
+                    yield return 2500;
+                    
+                    while (!Flight.API.CTM(5564.7f, 4653.8f, 148.7f)) {
+                        yield return 100;
+                    }
+                }
+                
+                // If already in Garrison
+                if (Flight.API.IsInGarrison)
+                {
+                    var check = new Fiber<int>(GTownHallExit());
+                    while (check.Run()){
+                        yield return 100;
+                    }
+                }
             }
             
-            // Navigate out of Zangarra Properly.
-            // LOCATION 2
-            Vector3 zang1 = new Vector3(3187.2f, 788.7f, 77.7f);
-            Vector3 zang2 = new Vector3(3035.2f,  954.0f,  105.5f);
-            if (Flight.API.Me.Distance2DTo(zang1) < 302 && Flight.API.Me.Distance2DTo(zang2) > 75)
+            
+            // TALADOR ZONE SPECIAL PATHING!!!!!
+            //
+            // Each Special condition is labeled.
+            if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
             {
-                Flight.API.Print("Let's First Get Out of Zangarra!");
-                // These quick 'Z' height checks are for some tight turns the mesh sometimes handles poorly.
-                if (Flight.API.Me.Position.Z < 17)
+                // To Navigate out of Gordal Fortress and safely get around the energy Barrier.
+                // Initial logic is a positional check to see if player is inside the Fortress.
+                // LOCATION 1
+                Vector3 gord1 = new Vector3(1410f, 1728.5f, 310.3f);
+                if (Flight.API.Me.Distance2DTo(gord1) < 390)
                 {
-                    Vector3 zang3 = new Vector3(3316.2f, 950.4f, 17.4f);
-                    while(!Flight.API.MoveTo(zang3))
+                    Vector3 gord2 = new Vector3(1666.5f, 1743.6f, 298.6f);
+                    if ((Flight.API.Me.Position.Z > 302.4) || ((Flight.API.Me.Position.Z > 296.0) && (Flight.API.Me.Distance2DTo(gord2) > 47.05)))
                     {
-                        yield return 100;
-                    }
-                }
-                if (Flight.API.Me.Position.Z < 32)
-                {
-                    Vector3 zang4 = new Vector3(3286.9f, 1013.4f, 38.1f);
-                    while(!Flight.API.MoveTo(zang4))
-                    {
-                        yield return 100;
-                    }
-                }
-                if (Flight.API.Me.Position.Z < 44)
-                {
-                    Vector3 zang5 = new Vector3(3206.1f, 918.8f, 42.2f);
-                    while(!Flight.API.MoveTo(zang5))
-                    {
-                        yield return 100;
-                    }
-                }
-                Vector3 zang6 = new Vector3(3198.8f, 836.9f, 83.2f);
-                while(!Flight.API.MoveTo(zang6))
-                {
-                    yield return 100;
-                }
-                // Brief pause for aggro
-                yield return 2500;
-                Vector3 zang7 = new Vector3(3199.5f, 843.6f, 84.3f);
-                
-                while (Flight.API.Me.Distance2DTo(zang7) < 30)
-                {
-                    foreach (var unit in Flight.API.GameObjects)
-                    {
-                        if (unit.EntryID == 230874)
+                        Flight.API.Print("It Appears that You are in Gordal Fortress! Navigating Out...");
+                        // Guided pathing out of Gordal Fortress
+                        Vector3 gord3 = new Vector3(1645.4f, 1767.4f, 312.5f);
+                        Vector3 gord4 = new Vector3(1674.5f, 1729.1f, 291.4f);
+                        while (!Flight.API.MoveTo(gord3))
                         {
-                            while(!Flight.API.MoveTo(unit.Position))
-                            {
-                                yield return 100;
-                            }
-                            unit.Interact();
-                            yield return 10000;
+                            yield return 100;
+                        }
+                        Flight.API.Print("Let's Avoid that Energy Barrier!");
+                        while(!Flight.API.CTM(gord4))
+                        {
+                            yield return 100;
+                        }
+                        Flight.API.Print("Alright! Back on Track!!!");
+                    }
+                    yield break;
+                }
+                
+                // Navigate out of Zangarra Properly.
+                // LOCATION 2
+                Vector3 zang1 = new Vector3(3187.2f, 788.7f, 77.7f);
+                Vector3 zang2 = new Vector3(3035.2f,  954.0f,  105.5f);
+                if (Flight.API.Me.Distance2DTo(zang1) < 302 && Flight.API.Me.Distance2DTo(zang2) > 75)
+                {
+                    Flight.API.Print("Let's First Get Out of Zangarra!");
+                    // These quick 'Z' height checks are for some tight turns the mesh sometimes handles poorly.
+                    if (Flight.API.Me.Position.Z < 17)
+                    {
+                        Vector3 zang3 = new Vector3(3316.2f, 950.4f, 17.4f);
+                        while(!Flight.API.MoveTo(zang3))
+                        {
+                            yield return 100;
                         }
                     }
+                    if (Flight.API.Me.Position.Z < 32)
+                    {
+                        Vector3 zang4 = new Vector3(3286.9f, 1013.4f, 38.1f);
+                        while(!Flight.API.MoveTo(zang4))
+                        {
+                            yield return 100;
+                        }
+                    }
+                    if (Flight.API.Me.Position.Z < 44)
+                    {
+                        Vector3 zang5 = new Vector3(3206.1f, 918.8f, 42.2f);
+                        while(!Flight.API.MoveTo(zang5))
+                        {
+                            yield return 100;
+                        }
+                    }
+                    Vector3 zang6 = new Vector3(3198.8f, 836.9f, 83.2f);
+                    while(!Flight.API.MoveTo(zang6))
+                    {
+                        yield return 100;
+                    }
+                    // Brief pause for aggro
+                    yield return 2500;
+                    Vector3 zang7 = new Vector3(3199.5f, 843.6f, 84.3f);
+                    
+                    while (Flight.API.Me.Distance2DTo(zang7) < 30)
+                    {
+                        foreach (var unit in Flight.API.GameObjects)
+                        {
+                            if (unit.EntryID == 230874)
+                            {
+                                while(!Flight.API.MoveTo(unit.Position))
+                                {
+                                    yield return 100;
+                                }
+                                unit.Interact();
+                                yield return 10000;
+                            }
+                        }
+                    }
+                    Flight.API.Print("Alright, Let's Continue!");
+                    yield break;
                 }
-                Flight.API.Print("Alright, Let's Continue!");
-                yield break;
+                
+                // Navigate out of Voljin's Pride Arsenal
+                // LOCATION 3
+                Vector3 arsenal = new Vector3(3217.1f, 1606.4f, 166.1f);
+                if (Flight.API.Me.Distance2DTo(arsenal) < 15)
+                {
+                    while(!Flight.API.CTM(3226.4f, 1600.0f, 166.0f))
+                    {
+                        yield return 100;
+                    }
+                    while(!Flight.API.CTM(3241.7f, 1589.6f, 163.2f))
+                    {
+                        yield return 100;
+                    }
+                    yield break;
+                }
+                
+                // Navigational pathing too Shattrath City Spire Flightpath.
+                // LOCATION 4
+                Vector3 shatt1 = new Vector3(2604.9f, 2797.0f, 242.1f);
+                Vector3 shatt2 = new Vector3(2943.0f, 3351.9f, 53.0f);
+                if (Flight.API.Me.Level > 99 && Flight.API.Me.Distance2DTo(shatt2) < 430 && Flight.API.Me.Position.Z < 125)
+                {
+                    Flight.API.Print("Let's Move out of Shattrath. The elevator in the Sha'tari Market District Looks Good...");
+                    var check = new Fiber<int>(TakeElevator(231934,7,2687.2f,3017.5f,69.5f,2682.8f,2995.0f,233.9f));
+                    while (check.Run())
+                    {
+                        yield return 100;
+                    }
+                    Flight.API.Print("Let's Get to that Flightpath and Get Out of Here!");
+                    yield break;
+                }
+                yield break;     
             }
+            // End Talador
             
-            // Navigate out of Voljin's Pride Arsenal
-            // LOCATION 3
-            Vector3 arsenal = new Vector3(3217.1f, 1606.4f, 166.1f);
-            if (Flight.API.Me.Distance2DTo(arsenal) < 15)
-            {
-                while(!Flight.API.CTM(3226.4f, 1600.0f, 166.0f))
-                {
-                    yield return 100;
-                }
-                while(!Flight.API.CTM(3241.7f, 1589.6f, 163.2f))
-                {
-                    yield return 100;
-                }
-                yield break;
-            }
             
-            // Navigational pathing too Shattrath City Spire Flightpath.
-            // LOCATION 4
-            Vector3 shatt1 = new Vector3(2604.9f, 2797.0f, 242.1f);
-            Vector3 shatt2 = new Vector3(2943.0f, 3351.9f, 53.0f);
-            if (Flight.API.Me.Level > 99 && Flight.API.Me.Distance2DTo(shatt2) < 430 && Flight.API.Me.Position.Z < 125)
+            // ASHRAN SPECIAL PATHING!
+            //
+            // BEGIN
+            if (zoneID == 6941 || zoneID == 7548)
             {
-                Flight.API.Print("Let's Move out of Shattrath. The elevator in the Sha'tari Market District Looks Good...");
-                var check = new Fiber<int>(TakeElevator(231934,7,2687.2f,3017.5f,69.5f,2682.8f,2995.0f,233.9f));
-                while (check.Run())
+                Flight.API.Print("Woah! Let's Get Out of Ashran Before Some Alliance Find You!");
+                Vector3 ash = new Vector3(5090.1f, -3982.3f, 20.8f);
+                while(!Flight.API.MoveTo(ash))
                 {
                     yield return 100;
                 }
-                Flight.API.Print("Let's Get to that Flightpath and Get Out of Here!");
+                Vector3 ash2 = new Vector3(5141.9f, -3964.1f, 2.2f);
+                while(!Flight.API.MoveTo(ash2))
+                {
+                    yield return 100;
+                }
                 yield break;
             }
-            yield break;     
         }
-        // End Talador
-        
-        
-        // ASHRAN SPECIAL PATHING!
-        //
-        // BEGIN
-        if (zoneID == 6941 || zoneID == 7548)
+        else
         {
-            Flight.API.Print("Woah! Let's Get Out of Ashran Before Some Alliance Find You!");
-            Vector3 ash = new Vector3(5090.1f, -3982.3f, 20.8f);
-            while(!Flight.API.MoveTo(ash))
-            {
-                yield return 100;
-            }
-            Vector3 ash2 = new Vector3(5141.9f, -3964.1f, 2.2f);
-            while(!Flight.API.MoveTo(ash2))
-            {
-                yield return 100;
-            }
-            yield break;
+            // ALLIANCE
+            // Insert Alliance Special Pathing here.
+            // ALLIANCE
         }
         
         // Enter any additional pathing.
@@ -646,6 +701,84 @@ public class DraenorZones
                 yield return 100;
             }
             Flight.API.GlobalBotSettings.FlightMasterDiscoverRange = 75.0f;
+        }
+        yield break;
+    }
+    
+    // Method:          "HearthToGarrison()"
+    // What it Does:    Exactly as described, uses the Garrison hearthstone.
+    // Purpose:         Extraordinarily useful for speed.  If player needs to pickup a quest that starts in the garrison and they are not there
+    //                  by adding this option it will hearth them back, likewise with turning in something.
+    //                  This method is invaluable and used incredibly frequently to maximize the efficiency of player scripts and believable player
+    //                  behavior.
+    public static IEnumerable<int> HearthToGarrison()
+    {
+        // Error check to avoid use if flying
+        if (Flight.API.Me.IsOnTaxi)
+        {
+            // Waits to use until OFF the IsOnTaxi.
+            Flight.API.Print("Player is Currently on a Taxi, Please Be Patient And Enjoy the Scenery!");
+            int count = 0;
+            while (Flight.API.Me.IsOnTaxi)
+            {
+                yield return 1000;
+                count++;
+            }
+            Flight.API.Print("Player Exited the Flightpath after " + count + " seconds!");
+            yield return 1000;
+        }
+        
+        if (!Flight.API.IsInGarrison) 
+        {
+            // Verifying Garrison hearthstone is not on Cooldown.
+            if (Flight.API.ItemCooldown(110560) == 0) 
+            {
+                if (Flight.API.ExecuteLua<bool>("local name = GetMerchantItemInfo(1); if name ~= nil then return true else return false end"))
+                {
+                    Flight.API.Print("Player is Interacting With a Vendor. Closing Window Before Attempting to Hearth, lest the Bot Will Attempt to Sell G-Hearthstone!");
+                    Flight.API.ExecuteLua("CloseMerchant()");
+                    yield return 1000;
+                }
+                
+                // This is a check to verify player has moved, lest it will re-attempt to hearth.
+                Vector3 startPos = Flight.API.Me.Position;
+                while (Flight.API.Me.Distance2DTo(startPos) < 50)
+                {
+                    Flight.API.Print("Hearthing to Garrison");
+                    Flight.API.UseItem(110560);
+                    yield return 1000;
+                    // This keeps the player from attempting the next action until the Garrison hearthstone is successfully used
+                    while(Flight.API.Me.IsCasting) 
+                    {
+                        yield return 100;
+                    }
+                    yield return 1000;
+                    if (Flight.API.Me.Distance2DTo(startPos) >= 50)
+                    {
+				        break;
+                    }
+                    else
+                    {
+                        Flight.API.Print("Player Failed to Hearth. Trying Again...");
+                    }
+                }
+                // Waiting for loading screen!
+                while (!Flight.API.IsInGarrison)
+                {
+                    yield return 1000;
+                }
+                // Sometimes mesh errors occur by trying to CTM because it tries as soon as loading screen goes away but maybe some assets
+                // are not fully loaded in the world.  This gives a slight delay to ensure no error.  Really depends on player PC and connection.
+                Flight.API.Print("One Moment, Giving Mesh a Chance to Catchup!");
+                yield return 5000;
+            }
+            else 
+            {
+                // Assumedly, in instances like this, a 2ndary logic route is given as backup, either the mesh or by Flightpath.
+                Flight.API.Print("Player Wanted to Hearth to Garrison, but it is on Cooldown...");
+                // Apply Flight Logic soon...
+                yield break;
+            }
         }
         yield break;
     }
