@@ -21,6 +21,13 @@ public class Flight
     public static IEnumerable<int> FlyTo(string destination)
     {
         string destinationName = Localization.Localize(destination);
+        
+        // Verifying closest Flightpath isn't also the same I am trying to flyTo.  If it is, it breaks this Method and moves on.
+        List<object> result = getClosestFlight();
+        if (result[0].Equals(destination)) {
+            yield break;
+        }   
+        
         var check = new Fiber<int>(ToFlightMaster());
         while (check.Run())
         {
