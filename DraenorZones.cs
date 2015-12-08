@@ -4,7 +4,7 @@
 |   To Be Used with "Flight.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update Nov 23rd, 2015 */
+|   Last Update Nov 3rd, 2015 */
 
 
 public class DraenorZones
