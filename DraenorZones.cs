@@ -28,6 +28,7 @@ public class DraenorZones
         // Gorgrond (and caves and phases)
         if (zoneID == 6721 || zoneID == 6885 || zoneID == 7160 || zoneID == 7185)
         {
+            IsSpecialPathingNeeded = true;
             return getGorgrond(factionIsHorde);
         }
 
@@ -337,7 +338,7 @@ public class DraenorZones
     {
         int zoneID = Flight.API.Me.ZoneId;
         
-        if (Merchant.API.Me.IsHorde) {
+        if (Flight.API.Me.IsHorde) {
         // FROSTFIRE RIDGE ZONE SPECIAL PATHING!
             if (zoneID == 6720 || zoneID == 6868 || zoneID == 6745 || zoneID == 6849 || zoneID == 6861 || zoneID == 6864 || zoneID == 6848 || zoneID == 6875 || zoneID == 6939 || zoneID == 7005 || zoneID == 7209 || zoneID == 7004 || zoneID == 7327 || zoneID == 7328 || zoneID == 7329) {
                 
@@ -394,11 +395,28 @@ public class DraenorZones
                 }
             }
             
+            // GORGROND ZONE SPECIAL PATHING!!!!!
+            //
+            else if (zoneID == 6721 || zoneID == 6885 || zoneID == 7160 || zoneID == 7185)
+            {
+                List<object> result = Flight.getClosestFlight();
+                if (result[0].Equals("Beastwatch, Gorgrond")) 
+                {
+                    while(!Flight.API.MoveTo(5786.1f, 1255.8f, 107.4f))
+                    {
+                        yield return 100;
+                    }
+                    while(!Flight.API.MoveTo(5779.9f, 1294.9f, 107.3f))
+                    {
+                        yield return 100;
+                    }
+                }
+            }
             
             // TALADOR ZONE SPECIAL PATHING!!!!!
             //
             // Each Special condition is labeled.
-            if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
+            else if (zoneID == 6662 || zoneID == 6980 || zoneID == 6979 || zoneID == 7089 || zoneID == 7622)
             {
                 // To Navigate out of Gordal Fortress and safely get around the energy Barrier.
                 // Initial logic is a positional check to see if player is inside the Fortress.
@@ -526,7 +544,7 @@ public class DraenorZones
             // ASHRAN SPECIAL PATHING!
             //
             // BEGIN
-            if (zoneID == 6941 || zoneID == 7548)
+            else if (zoneID == 6941 || zoneID == 7548)
             {
                 Flight.API.Print("Woah! Let's Get Out of Ashran Before Some Alliance Find You!");
                 Vector3 ash = new Vector3(5090.1f, -3982.3f, 20.8f);
