@@ -536,7 +536,18 @@ public class DraenorZones
                     Flight.API.Print("Let's Get to that Flightpath and Get Out of Here!");
                     yield break;
                 }
-                yield break;     
+                
+                // Navigational pathing if up on the ledge at Telmor
+                // LOCATION 5
+                Vector3 Telmor = new Vector3(759.8f, 2899.7f, 208.2f);
+                if (Flight.API.Me.Distance2DTo(Telmor) < 50)
+                {
+                    Flight.API.Print("Let's Take this Elevator and Get Out of Telmor!");
+                    var check = new Fiber<int>(TakeElevator(232027, 3, 777.6f, 2893.5f, 207.8f, 794.6f, 2912.5f, 152.0f));
+                    while (check.Run()) {
+                        yield return 100;
+                    }
+                }
             }
             // End Talador
             
@@ -657,11 +668,21 @@ public class DraenorZones
                         }
                         Flight.API.Print("Alright, It Is Coming Back to us. Get Ready!");
                     }
-                    while(unit.Position.Z > (startZ + 1.0)) 
+                    // Checking position of elevator against your current position.
+                    if (Flight.API.Me.Position.Z < unit.Position.Z)
                     {
-                        yield return 100;
+                        while(unit.Position.Z > (startZ + 1.0)) 
+                        {
+                            yield return 100;
+                        }
                     }
-
+                    else if (Flight.API.Me.Position.Z > unit.Position.Z)
+                    {
+                        while(unit.Position.Z < (startZ - 1.0)) 
+                        {
+                            yield return 100;
+                        }
+                    }
                 }
                 Flight.API.Print("Ah, Excellent! Elevator is Here! Hop On Quick!");
                 Flight.API.CTM(unit.Position);
