@@ -4,7 +4,8 @@
 |   To Be Used with "InsertContinentName.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update 14th Oct, 2015 */
+|   Last Update: December 17th, 2015
+*/
 
 
 public class Flight
@@ -170,7 +171,7 @@ public class Flight
     // Method:      "IsFlightMapOpen()"
     public static bool IsFlightMapOpen()
 	{
-		return Flight.API.ExecuteLua<bool>("if TaxiNodeName(1) ~= \"INVALID\" then return true else return false end");
+		return API.ExecuteLua<bool>("if TaxiNodeName(1) ~= \"INVALID\" then return true else return false end");
 	}
     
     
@@ -191,10 +192,11 @@ public class Flight
     }
     
     
-    // Method:      "FlightMasterGossip()"
-    // Purpose:     Often Flightmasters have a lot of different Gossip options, like say, unfinished quests,
-    //              which will replace the normal gossip position on the flightmaster.  This finds the gossip option and 
-    //              selects the correct one.  This also brings in compatibility for ALL clients.
+    // Method:          "FlightMasterGossip()"
+    // What it Does:    If talking to a flightmaster, if the flightwindow is not open on interact and you are presented with gossip options, this chooses the correct option.
+    // Purpose:         Often Flightmasters have a lot of different Gossip options, like say, unfinished quests,
+    //                  which will replace the normal gossip position on the flightmaster.  This finds the gossip option and 
+    //                  selects the correct one.  This also brings in compatibility for ALL clients.
     public static void FlightMasterGossip()
     {
         // Initializing Function
