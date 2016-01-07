@@ -4,7 +4,7 @@
 |   To Be Used with "InsertContinentName.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update: December 17th, 2015
+|   Last Update: January 7th, 2016
 */
 
 
@@ -21,6 +21,8 @@ public class Flight
     // Sets up the initial command to send out the instructions to travel to a destination.
     public static IEnumerable<int> FlyTo(string destination)
     {
+        float range =  API.GlobalBotSettings.FlightMasterDiscoverRange;
+        API.GlobalBotSettings.FlightMasterDiscoverRange = 0; // Disable Flight Discovery - Minor annoyance as it will discover flight, run back to MoveTo position, then interact a 2nd time.
         string destinationName = Localization.Localize(destination);
         
         // Verifying closest Flightpath isn't also the same I am trying to flyTo.  If it is, it breaks this Method and moves on.
@@ -93,6 +95,9 @@ public class Flight
             API.Print("Unable to Find Desired Flight destination...");
             // Create script that finds the furthest known FP and takes that...
         }
+        
+        // Re-Enabling...
+        API.GlobalBotSettings.FlightMasterDiscoverRange = range;
     }
     
     
@@ -163,8 +168,6 @@ public class Flight
         
         // All Continents Eventually to be Added
         return result;
-
-        
     }
     
     
