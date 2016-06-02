@@ -4,7 +4,7 @@
 |   To Be Used with "InsertContinentName.cs" and "Localization.cs" class
 |   For use in collaboration with the Rebot API 
 |
-|   Last Update: January 7th, 2016
+|   Last Update: June 1st, 2016
 */
 
 
@@ -70,6 +70,7 @@ public class Flight
                 
                 yield return 5000;
                 int count = 6;
+
                 while (API.Me.IsOnTaxi)
                 {
                     yield return 1000;
@@ -125,7 +126,7 @@ public class Flight
             // Setting the initial FP to the closest distance
             closestZone = (string)FPs[0];
             closestVector3 = new Vector3((float)FPs[1], (float)FPs[2], (float)FPs[3]);
-            closestDistance = API.Me.Distance2DTo(closestVector3);
+            closestDistance = API.Me.Position.Distance(closestVector3);
             npcID = (int)FPs[4];
             IsSpecialPathingNeeded = (bool)FPs[5];
             
@@ -134,7 +135,7 @@ public class Flight
             for (int i = 0; i < FPs.Count - 5; i = i + 6)
             {
                 position = new Vector3((float)FPs[i + 1], (float)FPs[i + 2], (float)FPs[i + 3]);
-                tempDistance = API.Me.Distance2DTo(position);
+                tempDistance = API.Me.Position.Distance(position);
                 if (tempDistance < closestDistance)
                 {
                     closestDistance = tempDistance;
@@ -302,5 +303,40 @@ public class Flight
         {
             yield return 100;
         }
+    }
+    
+    // Method:          "GetClosestFlightToDestination(Vector3 destination)"
+    // What it Does:    Returns the string name of the closest flightmaster to player desired Vector3 destination
+    // Purpose:         Sometimes the player wishes to travel to another zone, but only has the destination.
+    //                  This could be useful at times when the destination is know, the player is far away, but
+    //                  the exact ideal flightmaster is not known.  This finds it for you.
+    public static string GetClosestFlightToDestination(Vector3 destination)
+    {
+        int continentID = API.Me.ContinentID;
+        string closestName = "";
+        Vector3 closestPosition;
+        List<object> zones = new List<object>();
+        
+        if (continentID == 1116)
+        {
+            zones = DraenorZones.GetEveryFlightMaster();
+        }
+
+        if (zones.Count > 0)
+        {
+            closestName = (string)zones[0];
+            closestPosition = new Vector3((float)zones[1],(float)zones[2],(float)zones[3]);
+            Vector3 temp;
+            for (int i = 6; i < zones.Count - 5; i = i + 6)
+            {
+                temp = new Vector3((float)zones[i+1],(float)zones[i+2],(float)zones[i+3]);
+                if (destination.Distance(temp) < destination.Distance(closestPosition))
+                {
+                    closestName = (string) zones[i];
+                    closestPosition = temp;
+                }
+            }
+        } 
+        return closestName;
     }
 }
